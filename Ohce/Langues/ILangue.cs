@@ -3,7 +3,7 @@
     public interface ILangue
     {
         string Félicitations { get; }
-        string Salutation { get; }
+        string Saluer(PériodeJournée période);
         string Acquittance { get; }
     }
 }

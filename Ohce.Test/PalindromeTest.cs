@@ -10,6 +10,15 @@ public class PalindromeTest
     private static readonly ILangue[] LanguesTestées
         = new ILangue[] { new LangueFrançaise(), new LangueAnglaise() };
 
+    private static readonly PériodeJournée[] PériodesTestées
+        = new PériodeJournée[]
+        {
+            PériodeJournée.Soir, 
+            PériodeJournée.Matin, 
+            PériodeJournée.AprésMidi, 
+            PériodeJournée.Nuit
+        };
+
     private static readonly string[] ChaînesTestéesSalutationAcquittance = { string.Empty, "radar", "toto" };
 
     [Fact(DisplayName = "QUAND on saisit une chaîne " +
@@ -55,31 +64,39 @@ public class PalindromeTest
         Assert.StartsWith(langue.Félicitations, résultatAprèsBienDit);
     }
 
-    public static IEnumerable<object[]> CasTestBonjourAuRevoir 
-        => new CartesianData(ChaînesTestéesSalutationAcquittance, LanguesTestées);
+    public static IEnumerable<object[]> CasTestBonjour
+        => new CartesianData(ChaînesTestéesSalutationAcquittance, LanguesTestées, PériodesTestées);
 
     [Theory(DisplayName = "ETANT DONNE un utilisateur parlant <langue> " +
+                          "ET que la période de la journée est <periode> " +
                           "QUAND on saisit une chaîne " +
-                        "ALORS la salutation de cette langue est envoyée avant toute réponse")]
-    [MemberData(nameof(CasTestBonjourAuRevoir))]
-    public void TestBonjour(string chaîneTestée, ILangue langue)
+                          "ALORS la salutation de cette langue à ce moment de la journée " +
+                          "est envoyée avant toute réponse")]
+    [MemberData(nameof(CasTestBonjour))]
+    public void TestBonjour(string chaîneTestée, ILangue langue, PériodeJournée période)
     {
         // ETANT DONNE un utilisateur parlant <langue>
+        // ET que la période de la journée est <periode>
+
         var détection = new DétectionPalindromeBuilder()
             .AyantPourLangue(langue)
+            .AyantPourPériodeDeLaJournée(période)
             .Build();
 
         // QUAND on saisit une chaîne
         var résultat = détection.TraiterChaîne(chaîneTestée);
 
-        // ALORS la salutation de cette langue est envoyée avant toute réponse
-        Assert.StartsWith(langue.Salutation, résultat);
+        // ALORS la salutation de cette langue à ce moment de la journée est envoyée avant toute réponse
+        Assert.StartsWith(langue.Saluer(période), résultat);
     }
+
+    public static IEnumerable<object[]> CasTestAuRevoir
+        => new CartesianData(ChaînesTestéesSalutationAcquittance, LanguesTestées);
 
     [Theory(DisplayName = "ETANT DONNE un utilisateur parlant <langue> " + 
                           "QUAND on saisit une chaîne " +
                           "ALORS l'acquittance en <langue> est envoyé en dernier")]
-    [MemberData(nameof(CasTestBonjourAuRevoir))]
+    [MemberData(nameof(CasTestAuRevoir))]
     public void TestAuRevoir(string chaîne, ILangue langue)
     {
         // ETANT DONNE un utilisateur parlant <langue>
