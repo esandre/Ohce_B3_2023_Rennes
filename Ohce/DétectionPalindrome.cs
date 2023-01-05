@@ -11,10 +11,7 @@ public class DétectionPalindrome
     {
         _langue = langue;
     }
-
-    public static string Traiter(string chaîne) 
-        => new DétectionPalindrome(new LangueFrançaise()).TraiterChaîne(chaîne);
-
+    
     public string TraiterChaîne(string chaîne)
     {
         var miroir = new string(chaîne.Reverse().ToArray());
@@ -25,7 +22,7 @@ public class DétectionPalindrome
         if (miroir.Equals(chaîne, StringComparison.CurrentCultureIgnoreCase))
             builder.Append(_langue.Félicitations);
 
-        builder.Append(Expressions.AuRevoir);
+        builder.Append(_langue.Acquittance);
 
         return builder.ToString();
     }

@@ -7,5 +7,6 @@
         public const string Bonjour = "Bonjour";
         public const string Hello = "Hello";
         public const string AuRevoir = "Au revoir";
+        public const string Goodbye = "Goodbye";
     }
 }

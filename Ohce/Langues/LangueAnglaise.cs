@@ -7,5 +7,8 @@
 
         /// <inheritdoc />
         public string Salutation => Expressions.Hello;
+
+        /// <inheritdoc />
+        public string Acquittance => Expressions.Goodbye;
     }
 }

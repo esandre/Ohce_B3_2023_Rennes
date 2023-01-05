@@ -10,7 +10,7 @@ public class PalindromeTest
     private static readonly ILangue[] LanguesTestées
         = new ILangue[] { new LangueFrançaise(), new LangueAnglaise() };
 
-    private static readonly string[] ChaînesTestéesSalutation = { string.Empty, "radar", "toto" };
+    private static readonly string[] ChaînesTestéesSalutationAcquittance = { string.Empty, "radar", "toto" };
 
     [Fact(DisplayName = "QUAND on saisit une chaîne " +
                         "ALORS celle-ci est renvoyée en miroir")]
@@ -18,7 +18,7 @@ public class PalindromeTest
     {
         // QUAND on saisit une chaîne
         const string chaîne = "toto";
-        var résultat = DétectionPalindrome.Traiter(chaîne);
+        var résultat = DétectionPalindromeBuilder.Default.TraiterChaîne(chaîne);
 
         // ALORS celle-ci est renvoyée en miroir
         const string miroir = "otot";
@@ -36,7 +36,9 @@ public class PalindromeTest
     public void TestPalindrome(string palindrome, ILangue langue)
     {
         // ETANT DONNE un utilisateur parlant <langue>
-        var détection = new DétectionPalindrome(langue);
+        var détection = new DétectionPalindromeBuilder()
+            .AyantPourLangue(langue)
+            .Build();
 
         // QUAND on saisit un palindrome
         var résultat = détection.TraiterChaîne(palindrome);
@@ -53,36 +55,43 @@ public class PalindromeTest
         Assert.StartsWith(langue.Félicitations, résultatAprèsBienDit);
     }
 
-    public static IEnumerable<object[]> CasTestBonjour 
-        => new CartesianData(ChaînesTestéesSalutation, LanguesTestées);
+    public static IEnumerable<object[]> CasTestBonjourAuRevoir 
+        => new CartesianData(ChaînesTestéesSalutationAcquittance, LanguesTestées);
 
     [Theory(DisplayName = "ETANT DONNE un utilisateur parlant <langue> " +
                           "QUAND on saisit une chaîne " +
                         "ALORS la salutation de cette langue est envoyée avant toute réponse")]
-    [MemberData(nameof(CasTestBonjour))]
+    [MemberData(nameof(CasTestBonjourAuRevoir))]
     public void TestBonjour(string chaîneTestée, ILangue langue)
     {
         // ETANT DONNE un utilisateur parlant <langue>
-        var détectionPalindrom = new DétectionPalindrome(langue);
+        var détection = new DétectionPalindromeBuilder()
+            .AyantPourLangue(langue)
+            .Build();
 
         // QUAND on saisit une chaîne
-        var résultat = détectionPalindrom.TraiterChaîne(chaîneTestée);
+        var résultat = détection.TraiterChaîne(chaîneTestée);
 
         // ALORS la salutation de cette langue est envoyée avant toute réponse
         Assert.StartsWith(langue.Salutation, résultat);
     }
 
-    [Theory(DisplayName = "QUAND on saisit une chaîne " +
-                        "ALORS « Au revoir » est envoyé en dernier")]
-    [InlineData("")]
-    [InlineData("radar")]
-    [InlineData("toto")]
-    public void TestAuRevoir(string chaîne)
+    [Theory(DisplayName = "ETANT DONNE un utilisateur parlant <langue> " + 
+                          "QUAND on saisit une chaîne " +
+                          "ALORS l'acquittance en <langue> est envoyé en dernier")]
+    [MemberData(nameof(CasTestBonjourAuRevoir))]
+    public void TestAuRevoir(string chaîne, ILangue langue)
     {
-        // QUAND on saisit une chaîne
-        var résultat = DétectionPalindrome.Traiter(chaîne);
+        // ETANT DONNE un utilisateur parlant <langue>
+        var détection = new DétectionPalindromeBuilder()
+            .AyantPourLangue(langue)
+            .Build();
 
-        // ALORS « Au revoir » est envoyé en dernier
-        Assert.EndsWith(Expressions.AuRevoir, résultat);
+        // QUAND on saisit une chaîne
+        var résultat = détection.TraiterChaîne(chaîne);
+
+        // ALORS l'acquittance en <langue> est envoyé en dernier
+        Assert.EndsWith(langue.Acquittance, résultat);
     }
+
 }
