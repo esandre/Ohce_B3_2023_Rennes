@@ -94,4 +94,21 @@ public class PalindromeTest
         Assert.EndsWith(langue.Acquittance, résultat);
     }
 
+    [Theory(DisplayName = "ETANT DONNE un utilisateur parlant <langue> " +
+                          "QUAND on saisit une chaîne " +
+                          "ALORS l'acquittance en <langue> est envoyé en dernier")]
+    [MemberData(nameof(CasTestBonjourAuRevoir))]
+    public void Test50(string chaîne, ILangue langue)
+    {
+        // ETANT DONNE 50 instances d'OHCE configurées avec <langue>
+        var instances = new DetectionPalindromeGenerator()
+            .AyantPourLangue(langue)
+            .Generate(50);
+
+        // QUAND on saisit une chaîne
+        var résultat = instances.AsParallel().Select(instance => instance.TraiterChaîne(chaîne));
+
+        // ALORS l'acquittance en <langue> est envoyé en dernier
+        //Assert.EndsWith(langue.Acquittance, résultat);
+    }
 }
