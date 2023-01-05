@@ -5,11 +5,11 @@ namespace Ohce;
 
 public class DétectionPalindrome
 {
-    private readonly string _félicitations;
+    private readonly ILangue _langue;
 
     public DétectionPalindrome(ILangue langue)
     {
-        _félicitations = langue.Félicitations;
+        _langue = langue;
     }
 
     public static string Traiter(string chaîne) 
@@ -19,11 +19,11 @@ public class DétectionPalindrome
     {
         var miroir = new string(chaîne.Reverse().ToArray());
 
-        var builder = new StringBuilder(Expressions.Bonjour);
+        var builder = new StringBuilder(_langue.Salutation);
 
         builder.Append(miroir);
         if (miroir.Equals(chaîne, StringComparison.CurrentCultureIgnoreCase))
-            builder.Append(_félicitations);
+            builder.Append(_langue.Félicitations);
 
         builder.Append(Expressions.AuRevoir);
 

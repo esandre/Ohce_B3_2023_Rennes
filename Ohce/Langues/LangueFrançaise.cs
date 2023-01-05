@@ -4,5 +4,8 @@
     {
         /// <inheritdoc />
         public string Félicitations => Expressions.BienDit;
+
+        /// <inheritdoc />
+        public string Salutation => Expressions.Bonjour;
     }
 }

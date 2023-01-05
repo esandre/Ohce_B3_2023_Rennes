@@ -1,9 +1,17 @@
 using Ohce.Langues;
+using Ohce.Test.Utilities;
 
 namespace Ohce.Test;
 
 public class PalindromeTest
 {
+    private static readonly string[] PalindromeAvecEtSansMajuscule = new[] { "Radar", "radar" };
+
+    private static readonly ILangue[] LanguesTestées
+        = new ILangue[] { new LangueFrançaise(), new LangueAnglaise() };
+
+    private static readonly string[] ChaînesTestéesSalutation = { string.Empty, "radar", "toto" };
+
     [Fact(DisplayName = "QUAND on saisit une chaîne " +
                         "ALORS celle-ci est renvoyée en miroir")]
     public void TestMiroir()
@@ -17,13 +25,8 @@ public class PalindromeTest
         Assert.Contains(miroir, résultat);
     }
 
-    public static IEnumerable<object[]> CasTestPalindrome => new[]
-    {
-        new object[] { "Radar", new LangueAnglaise() },
-        new object[] { "Radar", new LangueFrançaise() },
-        new object[] { "radar", new LangueAnglaise() },
-        new object[] { "radar", new LangueFrançaise() },
-    };
+    public static IEnumerable<object[]> CasTestPalindrome
+        => new CartesianData(PalindromeAvecEtSansMajuscule, LanguesTestées);
 
     [Theory(DisplayName = "ETANT DONNE un utilisateur parlant <langue> " +
                           "QUAND on saisit un palindrome " +
@@ -50,18 +53,23 @@ public class PalindromeTest
         Assert.StartsWith(langue.Félicitations, résultatAprèsBienDit);
     }
 
-    [Theory(DisplayName = "QUAND on saisit une chaîne " +
-                        "ALORS « Bonjour » est envoyé avant toute réponse")]
-    [InlineData("")]
-    [InlineData("radar")]
-    [InlineData("toto")]
-    public void TestBonjour(string chaîneTestée)
-    {
-        // QUAND on saisit une chaîne
-        var résultat = DétectionPalindrome.Traiter(chaîneTestée);
+    public static IEnumerable<object[]> CasTestBonjour 
+        => new CartesianData(ChaînesTestéesSalutation, LanguesTestées);
 
-        // ALORS « Bonjour » est envoyé avant toute réponse
-        Assert.StartsWith(Expressions.Bonjour, résultat);
+    [Theory(DisplayName = "ETANT DONNE un utilisateur parlant <langue> " +
+                          "QUAND on saisit une chaîne " +
+                        "ALORS la salutation de cette langue est envoyée avant toute réponse")]
+    [MemberData(nameof(CasTestBonjour))]
+    public void TestBonjour(string chaîneTestée, ILangue langue)
+    {
+        // ETANT DONNE un utilisateur parlant <langue>
+        var détectionPalindrom = new DétectionPalindrome(langue);
+
+        // QUAND on saisit une chaîne
+        var résultat = détectionPalindrom.TraiterChaîne(chaîneTestée);
+
+        // ALORS la salutation de cette langue est envoyée avant toute réponse
+        Assert.StartsWith(langue.Salutation, résultat);
     }
 
     [Theory(DisplayName = "QUAND on saisit une chaîne " +
