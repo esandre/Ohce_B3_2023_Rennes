@@ -1,3 +1,5 @@
+using Ohce.Langues;
+
 namespace Ohce.Test;
 
 public class PalindromeTest
@@ -15,15 +17,26 @@ public class PalindromeTest
         Assert.Contains(miroir, résultat);
     }
 
-    [Theory(DisplayName = "QUAND on saisit un palindrome " +
-                        "ALORS celui-ci est renvoyé " +
-                        "ET « Bien dit » est envoyé ensuite")]
-    [InlineData("Radar")]
-    [InlineData("radar")]
-    public void TestPalindrome(string palindrome)
+    public static IEnumerable<object[]> CasTestPalindrome => new[]
     {
+        new object[] { "Radar", new LangueAnglaise() },
+        new object[] { "Radar", new LangueFrançaise() },
+        new object[] { "radar", new LangueAnglaise() },
+        new object[] { "radar", new LangueFrançaise() },
+    };
+
+    [Theory(DisplayName = "ETANT DONNE un utilisateur parlant <langue> " +
+                          "QUAND on saisit un palindrome " +
+                          "ALORS celui-ci est renvoyé " +
+                          "ET des félicitations en <langue> sont envoyées")]
+    [MemberData(nameof(CasTestPalindrome))]
+    public void TestPalindrome(string palindrome, ILangue langue)
+    {
+        // ETANT DONNE un utilisateur parlant <langue>
+        var détection = new DétectionPalindrome(langue);
+
         // QUAND on saisit un palindrome
-        var résultat = DétectionPalindrome.Traiter(palindrome);
+        var résultat = détection.TraiterChaîne(palindrome);
 
         // ALORS celui-ci est renvoyé
         Assert.Contains(palindrome, résultat, StringComparison.CurrentCultureIgnoreCase);
@@ -33,8 +46,8 @@ public class PalindromeTest
 
         var résultatAprèsBienDit = résultat[endOfPalindrome..];
 
-        // ET « Bien dit » est envoyé ensuite
-        Assert.StartsWith(Expressions.BienDit, résultatAprèsBienDit);
+        // ET des félicitations en <langue> sont envoyées
+        Assert.StartsWith(langue.Félicitations, résultatAprèsBienDit);
     }
 
     [Theory(DisplayName = "QUAND on saisit une chaîne " +

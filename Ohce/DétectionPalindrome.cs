@@ -1,10 +1,21 @@
 ﻿using System.Text;
+using Ohce.Langues;
 
 namespace Ohce;
 
-public static class DétectionPalindrome
+public class DétectionPalindrome
 {
-    public static string Traiter(string chaîne)
+    private readonly string _félicitations;
+
+    public DétectionPalindrome(ILangue langue)
+    {
+        _félicitations = langue.Félicitations;
+    }
+
+    public static string Traiter(string chaîne) 
+        => new DétectionPalindrome(new LangueFrançaise()).TraiterChaîne(chaîne);
+
+    public string TraiterChaîne(string chaîne)
     {
         var miroir = new string(chaîne.Reverse().ToArray());
 
@@ -12,7 +23,7 @@ public static class DétectionPalindrome
 
         builder.Append(miroir);
         if (miroir.Equals(chaîne, StringComparison.CurrentCultureIgnoreCase))
-            builder.Append(Expressions.BienDit);
+            builder.Append(_félicitations);
 
         builder.Append(Expressions.AuRevoir);
 
